@@ -118,10 +118,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
         } else {
             FirebaseManager.getUserInfo(id).thenAcceptAsync(user -> {
-                FirebaseManager.isFollowing(id).thenAcceptAsync(isFollowing -> {
-                    Log.d("got user info", "name: " + user.name);
+                FirebaseManager.getFriendShipStatus(id).thenAcceptAsync(status -> {
                     FragmentManager fm = getSupportFragmentManager();
-                    ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(user, isFollowing);
+                    ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(user, status);
                     profileViewFragment.show(fm, id);
                 });
             });

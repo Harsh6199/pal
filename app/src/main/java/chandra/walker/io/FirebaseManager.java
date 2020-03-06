@@ -290,7 +290,7 @@ class FirebaseManager {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
+                        if (!task.isSuccessful()) {
                             Log.e("Failed to add as friend", String.valueOf(task.getException()));
                             String reason = String.valueOf(task.getException());
                             if (reason.contains("No document to update:")) {
@@ -338,6 +338,45 @@ class FirebaseManager {
             done.complete(isCompleted);
         });
         return done;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    static CompletableFuture<FriendshipStatus> getFriendShipStatus(String friendId) {
+        CompletableFuture<FriendshipStatus> status = new CompletableFuture<>();
+
+        DocumentReference people = db.collection("user")
+                .document(CurrentUser.uuid)
+                .collection("social")
+                .document("people");
+        people.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot snapshot = task.getResult();
+                    List<String> friendsList = (List<String>) snapshot.get("friends");
+                    List<String> requestSent = (List<String>) snapshot.get("requestSent");
+                    List<String> requestReceived = (List<String>) snapshot.get("requestReceived");
+                    FriendshipStatus friendshipStatus = FriendshipStatus.NA;
+                    try{
+                        if(friendsList != null && friendsList.contains(friendId)){
+                            friendshipStatus = FriendshipStatus.FRIEND;
+                        } else if( requestReceived != null && requestReceived.contains(friendId)){
+                            friendshipStatus = FriendshipStatus.FOLLOWS_YOU;
+                        } else if(requestSent != null && requestSent.contains(friendId)){
+                            friendshipStatus = FriendshipStatus.FOLLOWING;
+                        }
+                        status.complete(friendshipStatus);
+                    }catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                }
+                status.complete(FriendshipStatus.NA);
+            }
+        });
+
+
+        return status;
     }
 
     static void logOut() {

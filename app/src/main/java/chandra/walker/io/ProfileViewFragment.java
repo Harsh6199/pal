@@ -24,11 +24,12 @@ public class ProfileViewFragment extends DialogFragment implements View.OnClickL
 
     }
 
-    static ProfileViewFragment newInstance(User user, Boolean isFollowing) {
+    static ProfileViewFragment newInstance(User user, FriendshipStatus status) {
         ProfileViewFragment frag = new ProfileViewFragment();
         Bundle args = new Bundle();
         args.putSerializable("user", user);
-        args.putBoolean("isFollowing", isFollowing);
+        args.putString("isFollowing", status.toString());
+        System.out.println("Frinds list"+ status.toString());
         frag.setArguments(args);
         return frag;
     }
@@ -48,12 +49,14 @@ public class ProfileViewFragment extends DialogFragment implements View.OnClickL
         ImageView profileView = view.findViewById(R.id.profile);
         TextView name = view.findViewById(R.id.name);
         User user = (User) getArguments().getSerializable("user");
-        Boolean isFollowing = getArguments().getBoolean("isFollowing");
-        if (isFollowing) {
+        String status = getArguments().getString("isFollowing");
+        assert status != null;
+        if(status.equals(FriendshipStatus.NA.toString())){
+            addAsFriend.setText("Add Friend");
+        } else {
             addAsFriend.setEnabled(false);
-            addAsFriend.setText("Following");
+            addAsFriend.setText(status);
         }
-
         System.out.println("Got user object" + user.name);
         name.setText(user.name);
         Picasso.with(getContext()).load(user.photoUrl).into(profileView);
