@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Walker</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="profile_avatar">Profile avatar</string>
+    <string name="loading">Loading...</string>
+    <string name="add_as_friend">Add as friend</string>
+    <string name="send_friend_request">Send Friend request</string>
+    <string name="follow">follow</string>
+    <string name="hello_walker">Hello Explorer!</string>
+    <string name="direction">direction</string>
+    <string name="phone">phone</string>
+    <string name="splash">splash</string>
+    <string name="logout">logout</string>
+</resources>
